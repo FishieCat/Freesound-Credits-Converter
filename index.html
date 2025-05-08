@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Freesound Credits Converter</title>
+  <style>
+	h1 { font-size: 100%; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      flex: 1;
+      overflow: hidden;
+    }
+    textarea, pre {
+      width: 100%;
+      min-height: 400px;
+      height: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      font-family: monospace;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      margin-top: 0;
+    }
+    .output {
+      background-color: #f9f9f9;
+      cursor: pointer;
+    }
+    .highlight {
+      background-color: #fff9c4; /* light yellow */
+    }
+  </style>
+</head>
+<body>
+  <h1>Freesound Credits Converter</h1>
+  <div class="container">
+    <textarea id="input" placeholder="Paste original text here...">Sound by Name -- https://freesound.org -- License: LicenseName</textarea>
+    <pre id="output1" class="output" onclick="selectText(this)"></pre>
+    <pre id="output2" class="output" onclick="selectText(this)"></pre>
+    <pre id="output3" class="output" onclick="selectText(this)"></pre>
+  </div>
+
+  <script>
+    const input = document.getElementById('input');
+    const output1 = document.getElementById('output1');
+    const output2 = document.getElementById('output2');
+    const output3 = document.getElementById('output3');
+
+    input.addEventListener('input', () => {
+      const lines = input.value.split(/\r?\n/);
+      let o1 = '', o2 = '', o3 = '';
+
+      lines.forEach(line => {
+        const match = line.match(/^(.*?) by (.*?) -- (https?:\/\/[^\s]+) -- License: (.+)$/);
+        if (match) {
+          const [_, title, author, url, license] = match;
+
+          const line1 = `${title} by\n${author}`;
+          const line2 = `${title} (${url} -- License: ${license}) by\n${author}`;
+          const line3 = `${title} (${url}) by\n${author}`;
+
+          o1 += `<div class="highlight">${line1}\n</div>`;
+          o2 += `<div class="highlight">${line2}\n</div>`;
+          o3 += `<div class="highlight">${line3}\n</div>`;
+        } else {
+          o1 += `<div>${line}\n</div>`;
+          o2 += `<div>${line}\n</div>`;
+          o3 += `<div>${line}\n</div>`;
+        }
+      });
+
+      output1.innerHTML = o1;
+      output2.innerHTML = o2;
+      output3.innerHTML = o3;
+    });
+
+    function selectText(element) {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  </script>
+</body>
+</html>
